@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, StatusBar, FlatList } from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
+import * as Animatable from 'react-native-animatable';
 
 export default function TaskList({data}) {
 
     return (
-        <View style={styles.conteiner}>
+        <Animatable.View style={styles.conteiner}  animation="bounceIn" useNativeDriver>
             <TouchableOpacity>
-                <Ionicons name='md-checkmark-circle' size={30} color='#A9A9A9' />
+                <Ionicons name='md-checkmark-circle' size={30} color='#483D8B' />
             </TouchableOpacity>
             <View>
                 <Text style={styles.task}>{data.task}</Text>
             </View>
-        </View>
+        </Animatable.View >
     );
     }
 
@@ -33,7 +34,6 @@ export default function TaskList({data}) {
             height:3
           },
           backgroundColor: '#fff',
-      
         },
         task:{
             color: '#1C1C1C',

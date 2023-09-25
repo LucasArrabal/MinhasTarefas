@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, StatusBar, FlatList, Modal } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Ionicons} from '@expo/vector-icons';
 import TaskList from './src/components/TaskList';
 import * as Animatable from 'react-native-animatable';
@@ -10,6 +11,25 @@ export default function App() {
   const [task, setTask] = useState([]);
   const[open , setOpen] = useState(false);
   const[input , setInput] = useState(' ');
+
+  useEffect( () => {
+     async function loadTasks(){
+      const taskStorege =  await AsyncStorage.getItem('@task');
+      if(taskStorege){
+        setTask(JSON.parse(taskStorege));
+      }
+    }
+    
+    loadTasks();
+  }, []);
+
+
+  useEffect( () => {
+    async function safeTask(){
+      await AsyncStorage.setItem('@task' , JSON.stringify(task));
+    }
+    safeTask();
+  }, [task]);
 
   function handleAdd(){
     if(input === '') return;
@@ -24,6 +44,12 @@ export default function App() {
     setInput('');
   }
 
+  const handleDelete = useCallback((data) =>{
+    const find = task.filter(r => r.key !== data.key);
+    setTask(find);
+  })
+    
+  
   return (
     <SafeAreaView style={styles.conteiner}>
       <StatusBar backgroundColor="#483D8B"  barStyle='#483D8B'/>
@@ -36,7 +62,7 @@ export default function App() {
       showsHorizontalScrollIndicator={false}
       data={task}
       keyExtractor={(item) => String(item.key)}
-      renderItem={({item}) => <TaskList data={item} />}
+      renderItem={({item}) => <TaskList data={item} handleDelete={handleDelete} />}
       />
 
       <Modal animationType='slide' transparent={false}  visible={open}>
